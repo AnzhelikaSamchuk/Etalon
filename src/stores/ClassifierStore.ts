@@ -37,35 +37,6 @@ class ClassifierStore {
     ],
   };
 
-  /*public classifier: IClassifierDto = [
-    {
-      nodeId: '0',
-      value: "Parent A",
-      nodes: [
-        { nodeId: '1', value: "Child A" },
-        { nodeId: '2', value: "Child Z" },
-      ],
-    },
-    {
-      nodeId: '3',
-      value: "Parent B",
-      nodes: [
-        {
-          nodeId: '4',
-          value: "Child C",
-        },
-        {
-          nodeId: '5',
-          value: "Parent C",
-          nodes: [
-            { nodeId: '6', value: "Child D" },
-            { nodeId: '7', value: "Child E" },
-            { nodeId: '8', value: "Child F" },
-          ],
-        },
-      ],
-    },
-  ];*/
 
   constructor() {
     makeObservable(this, {

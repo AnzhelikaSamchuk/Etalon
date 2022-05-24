@@ -1,20 +1,14 @@
-import React, { useState } from "react";
-import { classifierStore } from "../../stores";
-import TreeView from "@mui/lab/TreeView";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useState } from "react";
 import "./MainPage.styles.scss";
 //import * as s from "./MainPage.styles.scss";
-//import { TreeItem } from "@mui/lab";
-import IClassifierDto from "../../shared/interfaces/IClassifierDto";
+
 import "@nosferatu500/react-sortable-tree/style.css";
 import SortableTree, {
-  insertNode,
   removeNodeAtPath,
   addNodeUnderParent,
   getNodeAtPath,
-  TreeIndex,
-  TreeNode,
+  changeNodeAtPath,
+  defaultSearchMethod,
 } from "@nosferatu500/react-sortable-tree";
 import { Button } from "@mui/material";
 //import FileExplorerTheme from "@nosferatu500/theme-file-explorer";
@@ -45,17 +39,14 @@ const MainPage = () => {
   ];
 
   const [treeData, setTreeData] = useState(data);
-  const [node, setNode] = useState({});
-  const [path, setPath] = useState<number[] | string[]>([]);
+  const [searchString, setSearchString] = useState("");
+/*  const [searchFocusIndex, setSearchFocusIndex] = useState(0);*/
 
   const updateTreeData = (data: any) => {
     setTreeData([...data]);
+    //console.log(treeData);
   };
 
-  const selectThis = (node: any, path: any) => {
-    setNode(node);
-    setPath(path);
-  };
 
   const insertNewNode = (path: number[]) => {
     const parentNode = getNodeAtPath({
@@ -72,16 +63,16 @@ const MainPage = () => {
 
     updateTreeData(
       addNodeUnderParent({
-      treeData: treeData,
-      newNode: { title: "", children: [] },
-      expandParent: true,
-      parentKey: parentKey,
-      getNodeKey: ({ treeIndex }) => treeIndex,
-    }).treeData
+        treeData: treeData,
+        newNode: { title: "", children: [] },
+        expandParent: true,
+        parentKey: parentKey,
+        getNodeKey: ({ treeIndex }) => treeIndex,
+      }).treeData
     );
   };
 
-  const removeNode = (path: any) => {
+  const removeNode = (path: number[]) => {
     updateTreeData(
       removeNodeAtPath({
         treeData: treeData,
@@ -94,52 +85,48 @@ const MainPage = () => {
     );
   };
 
-  /*const renderTree = (nodes: IClassifierDto) => (
-    <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
-      {Array.isArray(nodes.children)
-        ? nodes.children.map((node) => renderTree(node))
-        : null}
-    </TreeItem>
-  );
-
-  const handleSelect = (
-    event: React.SyntheticEvent,
-    nodeIds: Array<string> | string
-  ) => (console.log(nodeIds.at(0)), console.log(nodeIds.length, "количество"));*/
-
   return (
     <>
       <div className="MainWrapper">Основная страница</div>
-      {/*<div className={s.MainWrapper}>Основная страница</div>*/}
 
-      {/*<TreeView
-        aria-label="file system navigator"
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
-        onNodeSelect={handleSelect}
-        multiSelect
-        sx={{ height: 100, flexGrow: 1, maxWidth: 400, overflowY: "auto" }}
-      >
-        {renderTree(classifierStore.data)}
-      </TreeView>*/}
+      <input
+        placeholder="Search"
+        value={searchString}
+        onChange={(event) => setSearchString(event.target.value)}
+      />
 
       <SortableTree
         treeData={treeData}
         onChange={updateTreeData}
+        /*searchQuery={searchString}
+        searchFocusOffset={1}
+        searchMethod={defaultSearchMethod}*/
         //theme={FileExplorerTheme}
         generateNodeProps={({ node, path }) => ({
           title: (
             <form
               onClick={(e) => {
+                console.log("зашел в форму");
                 e.preventDefault();
                 e.stopPropagation();
-                selectThis(node, path);
               }}
             >
               <input
                 style={{ fontSize: "1rem", width: 200 }}
                 value={node.title}
-                onChange={(event) => {}}
+                type="text"
+                onChange={(event) => {
+                  const title = event.target.value;
+
+                  updateTreeData(
+                    changeNodeAtPath({
+                      treeData: treeData,
+                      path,
+                      getNodeKey: ({ treeIndex }) => treeIndex,
+                      newNode: { ...node, title },
+                    })
+                  );
+                }}
               />
               <Button
                 variant="outlined"
