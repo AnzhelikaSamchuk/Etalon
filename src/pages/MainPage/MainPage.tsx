@@ -40,13 +40,13 @@ const MainPage = () => {
 
   const [treeData, setTreeData] = useState(data);
   const [searchString, setSearchString] = useState("");
-/*  const [searchFocusIndex, setSearchFocusIndex] = useState(0);*/
+  const [nodeClicked, setNodeClicked] = useState(false);
+  /*  const [searchFocusIndex, setSearchFocusIndex] = useState(0);*/
 
   const updateTreeData = (data: any) => {
     setTreeData([...data]);
     //console.log(treeData);
   };
-
 
   const insertNewNode = (path: number[]) => {
     const parentNode = getNodeAtPath({
@@ -85,6 +85,10 @@ const MainPage = () => {
     );
   };
 
+  const handleNodeClick = (node: any) => {
+    setNodeClicked(node);
+  };
+
   return (
     <>
       <div className="MainWrapper">Основная страница</div>
@@ -103,6 +107,15 @@ const MainPage = () => {
         searchMethod={defaultSearchMethod}*/
         //theme={FileExplorerTheme}
         generateNodeProps={({ node, path }) => ({
+          style:
+            node === nodeClicked
+              ? {
+                  border: "3px solid yellow",
+                }
+              : {},
+          onClick: () => {
+            handleNodeClick(node);
+          },
           title: (
             <form
               onClick={(e) => {
